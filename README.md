@@ -124,7 +124,7 @@ If the pipeline runs correctly, the results file will be written to `{download_d
 
 * a bam file (named as *.recal_reads.bam) containing pre-processed reads by the GATK BQSR will be written to: `` {download_dir}/output/gatk/{sample} ``, which could be directly loaded into IGV (Integrative Genomics Viewer) to check the sequenced reads coverage
 
-* all log files will be saved in the `` {download_dir}/logs/ `` directory
+* all log files will be saved in the `` {download_dir}/output/logs/ `` directory
 
 
 * To further interpret the results, see more details at(https://gatk.broadinstitute.org/hc/en-us/articles/360037593851-Mutect2)
