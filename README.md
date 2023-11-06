@@ -97,6 +97,7 @@ threads: 32
 
 mem_mb: 65536
 
+
 ```
 
 ### 1. Run snakemake
