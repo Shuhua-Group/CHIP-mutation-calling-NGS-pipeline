@@ -108,7 +108,7 @@ rule bwa_mem:
 #Step1.5.
 rule mergeBamAlignment:
     input: download_dir + "/{sample}.bwa_mem.sam",download_dir + "/{sample}.fastqtosam.bam"
-    output: temp(download_dir + "/{sample}_mergebamalignment.bam"),temp(download_dir + "/{sample}_mergebamalignment.bam.bai")
+    output: temp(download_dir + "/{sample}_mergebamalignment.bam"),temp(download_dir + "/{sample}_mergebamalignment.bai")
     threads: Threads
     resources:
         mem_mb=Mem_Mb
@@ -129,8 +129,8 @@ rule mergeBamAlignment:
 
 #Step1.6. mark duplicates
 rule markDuplicates:
-    input: download_dir + "/{sample}_mergebamalignment.bam",download_dir + "/{sample}_mergebamalignment.bam.bai"
-    output: temp(download_dir + "/{sample}/{sample}.dedup.bam"),temp(download_dir + "/{sample}/{sample}.dedup.bam.bai"),temp(download_dir + "/{sample}/{sample}_markduplicates_metrics.txt")
+    input: download_dir + "/{sample}_mergebamalignment.bam",download_dir + "/{sample}_mergebamalignment.bai"
+    output: temp(download_dir + "/{sample}/{sample}.dedup.bam"),temp(download_dir + "/{sample}/{sample}.dedup.bai"),temp(download_dir + "/{sample}/{sample}_markduplicates_metrics.txt")
     threads: Threads
     resources:
         mem_mb=Mem_Mb
@@ -148,7 +148,7 @@ rule markDuplicates:
 # Step2.1.1
 # Analyze patterns of covariation in the sequence dataset
 rule run_BQSR1:
-    input: download_dir + "/{sample}/{sample}.dedup.bam",download_dir + "/{sample}/{sample}.dedup.bam.bai"
+    input: download_dir + "/{sample}/{sample}.dedup.bam",download_dir + "/{sample}/{sample}.dedup.bai"
     output: temp(download_dir + "/output/gatk/{sample}/{sample}.recal_data.table")
     threads: Threads
     resources:
@@ -167,8 +167,8 @@ rule run_BQSR1:
 
 #Step2.1.2 Apply the recalibration to your sequence data
 rule run_BQSR2:
-    input: download_dir + "/output/gatk/{sample}/{sample}.recal_data.table",download_dir + "/{sample}/{sample}.dedup.bam",download_dir + "/{sample}/{sample}.dedup.bam.bai"
-    output: download_dir + "/output/gatk/{sample}/{sample}.recal_reads.bam",download_dir + "/output/gatk/{sample}/{sample}.recal_reads.bam.bai"
+    input: download_dir + "/output/gatk/{sample}/{sample}.recal_data.table",download_dir + "/{sample}/{sample}.dedup.bam",download_dir + "/{sample}/{sample}.dedup.bai"
+    output: download_dir + "/output/gatk/{sample}/{sample}.recal_reads.bam",download_dir + "/output/gatk/{sample}/{sample}.recal_reads.bai"
     threads: Threads
     resources:
         mem_mb=Mem_Mb
@@ -182,7 +182,7 @@ rule run_BQSR2:
 
 #Step2.1. generate recalibrated bam file
 rule gatk_mutect:
-    input: download_dir + "/output/gatk/{sample}/{sample}.recal_reads.bam", download_dir + "/output/gatk/{sample}/{sample}.recal_reads.bam.bai"
+    input: download_dir + "/output/gatk/{sample}/{sample}.recal_reads.bam", download_dir + "/output/gatk/{sample}/{sample}.recal_reads.bai"
     output: download_dir + "/output/vcf/{sample}/{sample}.mutect2.vcf.gz",temp(download_dir + "/output/mutect2/{sample}/{sample}.f1r2.tar.gz")
     threads: Threads
     resources:
