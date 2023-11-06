@@ -95,7 +95,7 @@ sample_dir: /path/to/sampleFolder
 
 threads: 32
 
-mem_mb: 131072
+mem_mb: 65536
 
 ```
 
