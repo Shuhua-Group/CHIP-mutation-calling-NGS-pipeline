@@ -1,0 +1,13 @@
+name: SomaticMC
+channels:
+  - conda-forge
+  - bioconda
+  - main
+dependencies:
+  - python=3.9.18
+  - gatk=3.8
+  - vcftools=0.1.16
+  - tabix=1.11
+  - snakemake=7.32.4
+  - graphviz=8.1.0
+  - picard=2.27.5

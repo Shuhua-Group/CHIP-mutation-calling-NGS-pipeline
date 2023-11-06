@@ -1,0 +1,277 @@
+
+#########################################################################
+# @author Yingbing Shi、Xia Tang
+# @date 2023/10/11 19:19
+# @distribution Somatic mutation calling pipeline for individual sample
+#########################################################################
+
+
+# Load configuration from config.yaml
+configfile: "config.yaml"
+Threads = config['threads']
+Mem_Mb = config['mem_mb']
+REP_INDEX = config['sampleNameList']
+download_dir = config['download_dir']
+sample_dir = config['sample_dir']
+gatk_db = config['gatk_db']
+sample = REP_INDEX
+
+# variable declaration
+reference = gatk_db + "/Homo_sapiens_assembly38.fasta"
+germline_resource = gatk_db + "/af-only-gnomad.hg38.vcf.gz"
+dbsnp = gatk_db + "/Homo_sapiens_assembly38.dbsnp138.vcf.gz"
+known_indels = gatk_db + "/Homo_sapiens_assembly38.known_indels.vcf.gz"
+known_mills = gatk_db + "/Mills_and_1000G_gold_standard.indels.hg38.vcf.gz"
+known_1kg = gatk_db + "/1000G_phase1.snps.high_confidence.hg38.vcf.gz"
+known_omni = gatk_db + "/1000G_omni2.5.hg38.vcf.gz"
+
+# panel of normal
+PON = gatk_db + "/somatic-hg38_1000g_pon.hg38.vcf.gz"
+
+
+
+rule all:
+    input:
+        expand(download_dir + "/output/vcf/{sample}/{sample}.somatic.final.vcf.gz.tbi",sample=REP_INDEX),
+        expand(download_dir + "/output/vcf/{sample}/{sample}.somatic.final.vcf.gz",sample=REP_INDEX),
+        expand(download_dir + "/output/vcf/{sample}/{sample}.mutect2.vcf.gz",sample=REP_INDEX),
+        expand(download_dir + "/output/gatk/{sample}/{sample}.recal_reads.bam",sample=REP_INDEX),
+
+
+#Step1.1. Convert Fastq to uBAM and add read group information using FastqToSam
+rule fastq2uBAM:
+    input: sample_dir + "/{sample}_1.fq.gz",sample_dir + "/{sample}_2.fq.gz"
+    output: temp(download_dir + "/{sample}.fastqtosam.bam")
+    threads: Threads
+    resources:
+        mem_mb=Mem_Mb
+    log: download_dir + "/logs/{sample}.fastqtosam.log"
+    shell: "(picard FastqToSam -FASTQ {input[0]} -FASTQ2 {input[1]}  \
+		-OUTPUT {output} \
+		-READ_GROUP_NAME {sample} \
+		-SAMPLE_NAME {sample} \
+		-LIBRARY_NAME {sample} \
+		-PLATFORM_UNIT illumina \
+		-PLATFORM illumina \
+		-SEQUENCING_CENTER AYND) >{log} 2>&1"
+
+
+#Step1.2. Mark adapter sequences using MarkIlluminaAdapters
+rule markIlluminaAdapters:
+    input: download_dir + "/{sample}.fastqtosam.bam"
+    output: temp(download_dir + "/{sample}.markilluminaadapters.bam"),temp(download_dir + "/{sample}.markilluminaadapters_metrics.txt")
+    threads: Threads
+    resources:
+        mem_mb=Mem_Mb
+    log: download_dir + "/logs/{sample}.markilluminaadapters.log"
+    shell: "(picard MarkIlluminaAdapters \
+		-I {input}\
+		-O {output[0]} \
+		-M {output[1]}) >{log} 2>&1"
+
+#Step1.3. Convert BAM to FASTQ and discount adapter sequences using SamToFastq
+rule sam2Fastq:
+    input: download_dir + "/{sample}.markilluminaadapters.bam",download_dir + "/{sample}.markilluminaadapters_metrics.txt"
+    output: temp(download_dir + "/{sample}.samtofastq.interleaved.fq")
+    threads: Threads
+    resources:
+        mem_mb=Mem_Mb
+    log: download_dir + "/logs/{sample}.samtofastq.interleaved.log"
+
+    shell: "(picard SamToFastq \
+		-I {input[0]} \
+		-FASTQ {output} \
+		-CLIPPING_ATTRIBUTE XT \
+		-CLIPPING_ACTION 2 \
+		-INTERLEAVE true \
+		-NON_PF true) >{log} 2>&1"
+
+#Step1.4. align with BWA_MEM and merge with uBAM
+# -M to flag shorter split hits as secondary. This is optional for Picard compatibility
+# as MarkDuplicates can directly process BWA's alignment, whether or not the alignment marks secondary hits.
+# However, if we want MergeBamAlignment to reassign proper pair alignments,
+# to generate data comparable to that produced by the Broad Genomics Platform, then we must mark secondary alignments.
+# -p to indicate the given file contains interleaved paired reads.
+# -t followed by a number for the number of processor threads to use concurrently.
+
+rule bwa_mem:
+    input: download_dir + "/{sample}.samtofastq.interleaved.fq"
+    output: temp(download_dir + "/{sample}.bwa_mem.sam")
+    threads: Threads
+    resources:
+        mem_mb=Mem_Mb
+    log: download_dir + "/logs/{sample}.bwa_mem.log"
+    # threads: Threads
+    shell: "(bwa mem -M -t 12 -p {reference} {input} > {output}) >{log} 2>&1"
+
+
+#Step1.5.
+rule mergeBamAlignment:
+    input: download_dir + "/{sample}.bwa_mem.sam",download_dir + "/{sample}.fastqtosam.bam"
+    output: temp(download_dir + "/{sample}_mergebamalignment.bam"),temp(download_dir + "/{sample}_mergebamalignment.bam.bai")
+    threads: Threads
+    resources:
+        mem_mb=Mem_Mb
+    log: download_dir + "/logs/{sample}_mergebamalignment.log"
+    shell: "(picard MergeBamAlignment \
+            -R {reference} \
+		-UNMAPPED_BAM {input[1]} \
+		-ALIGNED_BAM {input[0]} \
+		-O {output[0]} \
+		-CREATE_INDEX true \
+		-ADD_MATE_CIGAR true \
+		-CLIP_ADAPTERS false \
+		-CLIP_OVERLAPPING_READS true \
+		-INCLUDE_SECONDARY_ALIGNMENTS true \
+		-MAX_INSERTIONS_OR_DELETIONS -1 \
+		-PRIMARY_ALIGNMENT_STRATEGY MostDistant \
+		-ATTRIBUTES_TO_RETAIN XS) >{log} 2>&1"
+
+#Step1.6. mark duplicates
+rule markDuplicates:
+    input: download_dir + "/{sample}_mergebamalignment.bam",download_dir + "/{sample}_mergebamalignment.bam.bai"
+    output: temp(download_dir + "/{sample}/{sample}.dedup.bam"),temp(download_dir + "/{sample}/{sample}.dedup.bam.bai"),temp(download_dir + "/{sample}/{sample}_markduplicates_metrics.txt")
+    threads: Threads
+    resources:
+        mem_mb=Mem_Mb
+    log: download_dir + "/logs/{sample}.dedup.log"
+    shell: "(picard MarkDuplicates \
+        -INPUT {input[0]} \
+		-OUTPUT {output[0]} \
+		-METRICS_FILE {output[2]} \
+		-OPTICAL_DUPLICATE_PIXEL_DISTANCE 2500 \
+		-REMOVE_DUPLICATES true \
+		-CREATE_INDEX true) >{log} 2>&1"
+
+#Step2.1 generate recalibrated bam file
+
+# Step2.1.1
+# Analyze patterns of covariation in the sequence dataset
+rule run_BQSR1:
+    input: download_dir + "/{sample}/{sample}.dedup.bam",download_dir + "/{sample}/{sample}.dedup.bam.bai"
+    output: temp(download_dir + "/output/gatk/{sample}/{sample}.recal_data.table")
+    threads: Threads
+    resources:
+        mem_mb=Mem_Mb
+    log: download_dir + "/logs/{sample}/{sample}.recal_data.table.log"
+    shell: "(gatk --java-options '-Xmx32g -Xms4g' BaseRecalibrator \
+    -R {reference} \
+    -I {input[0]} \
+    --known-sites {dbsnp} \
+    --known-sites {known_indels} \
+    --known-sites {known_mills} \
+    --known-sites {known_1kg} \
+    --known-sites {known_omni}  \
+    -O {output}) >{log} 2>&1"
+
+
+#Step2.1.2 Apply the recalibration to your sequence data
+rule run_BQSR2:
+    input: download_dir + "/output/gatk/{sample}/{sample}.recal_data.table",download_dir + "/{sample}/{sample}.dedup.bam",download_dir + "/{sample}/{sample}.dedup.bam.bai"
+    output: download_dir + "/output/gatk/{sample}/{sample}.recal_reads.bam",download_dir + "/output/gatk/{sample}/{sample}.recal_reads.bam.bai"
+    threads: Threads
+    resources:
+        mem_mb=Mem_Mb
+    log: download_dir + "/logs/{sample}/{sample}.recal_reads.bam.log"
+    shell: "(gatk --java-options '-Xmx32g -Xms4g' ApplyBQSR \
+    -R {reference} \
+    -I {input[1]} \
+    --bqsr-recal-file {input[0]} \
+    -O {output[0]}) >{log} 2>&1"
+
+
+#Step2.1. generate recalibrated bam file
+rule gatk_mutect:
+    input: download_dir + "/output/gatk/{sample}/{sample}.recal_reads.bam", download_dir + "/output/gatk/{sample}/{sample}.recal_reads.bam.bai"
+    output: download_dir + "/output/vcf/{sample}/{sample}.mutect2.vcf.gz",temp(download_dir + "/output/mutect2/{sample}/{sample}.f1r2.tar.gz")
+    threads: Threads
+    resources:
+        mem_mb=Mem_Mb
+    log: download_dir + "/logs/{sample}/{sample}.mutect2.vcf.gz.log"
+    shell: "(gatk Mutect2 \
+    -R {reference} \
+    -I {input[0]} \
+    -pon {PON} \
+    --germline-resource {germline_resource} \
+    --af-of-alleles-not-in-resource 0.000001 \
+    --f1r2-tar-gz {output[1]}\
+    -O {output[0]}) >{log} 2>&1"
+
+
+#Step2.1. generate recalibrated bam file
+rule learnReadOrientationModel:
+    input: download_dir + "/output/mutect2/{sample}/{sample}.f1r2.tar.gz"
+    output: temp(download_dir + "/output/mutect2/{sample}/{sample}.read-orientation-model.tar.gz")
+    threads: Threads
+    resources:
+        mem_mb=Mem_Mb
+    log: download_dir + "/logs/{sample}/{sample}.read-orientation-model.tar.gz.log"
+    shell: "(gatk LearnReadOrientationModel \
+    -I {input} \
+    -O {output}) >{log} 2>&1"
+
+
+#Step2.1. generate recalibrated bam file
+rule getPileupSummaries:
+    input: download_dir + "/output/gatk/{sample}/{sample}.recal_reads.bam"
+    output: temp(download_dir + "/output/mutect2/{sample}/{sample}.tumor.getpileupsummaries.table")
+    threads: Threads
+    resources:
+        mem_mb=Mem_Mb
+    log: download_dir + "/logs/{sample}/{sample}.tumor.getpileupsummaries.table.log"
+    shell: "(gatk GetPileupSummaries \
+    -R {reference} \
+    -I {input}\
+    -V {germline_resource} \
+    -O {output}) >{log} 2>&1"
+
+
+#Step2.1. generate recalibrated bam file
+rule calculateContamination:
+    input: download_dir + "/output/mutect2/{sample}/{sample}.tumor.getpileupsummaries.table"
+    output: temp(download_dir + "/output/mutect2/{sample}/{sample}.calculatecontamination.table")
+    threads: Threads
+    resources:
+        mem_mb=Mem_Mb
+    log: download_dir + "/logs/{sample}/{sample}.calculatecontamination.table.log"
+    shell: "(gatk CalculateContamination \
+    -I {input}\
+    -O {output}) >{log} 2>&1"
+
+
+#Step2.1.1 generate recalibrated bam file
+rule filterMutectCalls1:
+    input: download_dir + "/output/vcf/{sample}/{sample}.mutect2.vcf.gz",download_dir + "/output/mutect2/{sample}/{sample}.calculatecontamination.table",download_dir + "/output/mutect2/{sample}/{sample}.read-orientation-model.tar.gz"
+    output: temp(download_dir + "/output/vcf/{sample}/{sample}.somatic_oncefiltered.vcf.gz")
+    threads: Threads
+    resources:
+        mem_mb=Mem_Mb
+    log: download_dir + "/logs/{sample}/{sample}.somatic_oncefiltered.vcf.gz.log"
+    shell: "(gatk FilterMutectCalls \
+    -R {reference} \
+    -V {input[0]} \
+    --contamination-table {input[1]} \
+    --ob-priors {input[2]}\
+    -O {output}) >{log} 2>&1"
+
+
+#Step2.1.2 generate recalibrated bam file
+rule filterMutectCalls2:
+    input: download_dir + "/output/vcf/{sample}/{sample}.somatic_oncefiltered.vcf.gz"
+    output: download_dir + "/output/vcf/{sample}/{sample}.somatic.final.vcf.gz"
+    threads: Threads
+    resources:
+        mem_mb=Mem_Mb
+    log: download_dir + "/logs/{sample}/{sample}.somatic.final.vcf.gz.log"
+    shell: "(vcftools --gzvcf {input} --remove-filtered-all --recode --stdout | bgzip -c -f >{output}) >{log} 2>&1"
+
+
+#Step2.1.3 generate recalibrated bam file
+rule filterMutectCalls3:
+    input: download_dir + "/output/vcf/{sample}/{sample}.somatic.final.vcf.gz"
+    output: download_dir + "/output/vcf/{sample}/{sample}.somatic.final.vcf.gz.tbi"
+    threads: Threads
+    resources:
+        mem_mb=Mem_Mb
+    log: download_dir + "/logs/{sample}/{sample}.somatic.final.vcf.gz.tbi.log"
+    shell: "(tabix {input} ) >{log} 2>&1"
