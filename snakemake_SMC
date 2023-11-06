@@ -45,7 +45,7 @@ rule fastq2uBAM:
     threads: Threads
     resources:
         mem_mb=Mem_Mb
-    log: download_dir + "/logs/{sample}.fastqtosam.log"
+    log: download_dir + "/output/logs/{sample}.fastqtosam.log"
     shell: "(picard FastqToSam -FASTQ {input[0]} -FASTQ2 {input[1]}  \
 		-OUTPUT {output} \
 		-READ_GROUP_NAME {sample} \
@@ -63,7 +63,7 @@ rule markIlluminaAdapters:
     threads: Threads
     resources:
         mem_mb=Mem_Mb
-    log: download_dir + "/logs/{sample}.markilluminaadapters.log"
+    log: download_dir + "/output/logs/{sample}.markilluminaadapters.log"
     shell: "(picard MarkIlluminaAdapters \
 		-I {input}\
 		-O {output[0]} \
@@ -76,7 +76,7 @@ rule sam2Fastq:
     threads: Threads
     resources:
         mem_mb=Mem_Mb
-    log: download_dir + "/logs/{sample}.samtofastq.interleaved.log"
+    log: download_dir + "/output/logs/{sample}.samtofastq.interleaved.log"
 
     shell: "(picard SamToFastq \
 		-I {input[0]} \
@@ -100,7 +100,7 @@ rule bwa_mem:
     threads: Threads
     resources:
         mem_mb=Mem_Mb
-    log: download_dir + "/logs/{sample}.bwa_mem.log"
+    log: download_dir + "/output/logs/{sample}.bwa_mem.log"
     # threads: Threads
     shell: "(bwa mem -M -t 12 -p {reference} {input} > {output}) >{log} 2>&1"
 
@@ -112,7 +112,7 @@ rule mergeBamAlignment:
     threads: Threads
     resources:
         mem_mb=Mem_Mb
-    log: download_dir + "/logs/{sample}_mergebamalignment.log"
+    log: download_dir + "/output/logs/{sample}_mergebamalignment.log"
     shell: "(picard MergeBamAlignment \
             -R {reference} \
 		-UNMAPPED_BAM {input[1]} \
@@ -134,7 +134,7 @@ rule markDuplicates:
     threads: Threads
     resources:
         mem_mb=Mem_Mb
-    log: download_dir + "/logs/{sample}.dedup.log"
+    log: download_dir + "/output/logs/{sample}.dedup.log"
     shell: "(picard MarkDuplicates \
         -INPUT {input[0]} \
 		-OUTPUT {output[0]} \
@@ -153,7 +153,7 @@ rule run_BQSR1:
     threads: Threads
     resources:
         mem_mb=Mem_Mb
-    log: download_dir + "/logs/{sample}/{sample}.recal_data.table.log"
+    log: download_dir + "/output/logs/{sample}/{sample}.recal_data.table.log"
     shell: "(gatk --java-options '-Xmx32g -Xms4g' BaseRecalibrator \
     -R {reference} \
     -I {input[0]} \
@@ -172,7 +172,7 @@ rule run_BQSR2:
     threads: Threads
     resources:
         mem_mb=Mem_Mb
-    log: download_dir + "/logs/{sample}/{sample}.recal_reads.bam.log"
+    log: download_dir + "/output/logs/{sample}/{sample}.recal_reads.bam.log"
     shell: "(gatk --java-options '-Xmx32g -Xms4g' ApplyBQSR \
     -R {reference} \
     -I {input[1]} \
@@ -187,7 +187,7 @@ rule gatk_mutect:
     threads: Threads
     resources:
         mem_mb=Mem_Mb
-    log: download_dir + "/logs/{sample}/{sample}.mutect2.vcf.gz.log"
+    log: download_dir + "/output/logs/{sample}/{sample}.mutect2.vcf.gz.log"
     shell: "(gatk Mutect2 \
     -R {reference} \
     -I {input[0]} \
@@ -205,7 +205,7 @@ rule learnReadOrientationModel:
     threads: Threads
     resources:
         mem_mb=Mem_Mb
-    log: download_dir + "/logs/{sample}/{sample}.read-orientation-model.tar.gz.log"
+    log: download_dir + "/output/logs/{sample}/{sample}.read-orientation-model.tar.gz.log"
     shell: "(gatk LearnReadOrientationModel \
     -I {input} \
     -O {output}) >{log} 2>&1"
@@ -218,7 +218,7 @@ rule getPileupSummaries:
     threads: Threads
     resources:
         mem_mb=Mem_Mb
-    log: download_dir + "/logs/{sample}/{sample}.tumor.getpileupsummaries.table.log"
+    log: download_dir + "/output/logs/{sample}/{sample}.tumor.getpileupsummaries.table.log"
     shell: "(gatk GetPileupSummaries \
     -R {reference} \
     -I {input}\
@@ -233,7 +233,7 @@ rule calculateContamination:
     threads: Threads
     resources:
         mem_mb=Mem_Mb
-    log: download_dir + "/logs/{sample}/{sample}.calculatecontamination.table.log"
+    log: download_dir + "/output/logs/{sample}/{sample}.calculatecontamination.table.log"
     shell: "(gatk CalculateContamination \
     -I {input}\
     -O {output}) >{log} 2>&1"
@@ -246,7 +246,7 @@ rule filterMutectCalls1:
     threads: Threads
     resources:
         mem_mb=Mem_Mb
-    log: download_dir + "/logs/{sample}/{sample}.somatic_oncefiltered.vcf.gz.log"
+    log: download_dir + "/output/logs/{sample}/{sample}.somatic_oncefiltered.vcf.gz.log"
     shell: "(gatk FilterMutectCalls \
     -R {reference} \
     -V {input[0]} \
@@ -262,7 +262,7 @@ rule filterMutectCalls2:
     threads: Threads
     resources:
         mem_mb=Mem_Mb
-    log: download_dir + "/logs/{sample}/{sample}.somatic.final.vcf.gz.log"
+    log: download_dir + "/output/logs/{sample}/{sample}.somatic.final.vcf.gz.log"
     shell: "(vcftools --gzvcf {input} --remove-filtered-all --recode --stdout | bgzip -c -f >{output}) >{log} 2>&1"
 
 
@@ -273,5 +273,5 @@ rule filterMutectCalls3:
     threads: Threads
     resources:
         mem_mb=Mem_Mb
-    log: download_dir + "/logs/{sample}/{sample}.somatic.final.vcf.gz.tbi.log"
+    log: download_dir + "/output/logs/{sample}/{sample}.somatic.final.vcf.gz.tbi.log"
     shell: "(tabix {input} ) >{log} 2>&1"
