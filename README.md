@@ -116,7 +116,7 @@ See more details at [snakemake doc](https://snakemake.readthedocs.io/en/stable/e
 
 ## Output
 
-If the pipeline runs correctly, the results file will be written to `{download_dir}`, including:
+If the pipeline runs correctly, the results file will be written to `{download_dir}/output/`, including:
 
 * a filtered individual VCF (named as *.somatic.final.vcf.gz) containing all detected somatic variants after hard filtering by Mutect2 will be written to: `` {download_dir}/output/vcf/{sample} ``, with high confident somatic variants remained
 
