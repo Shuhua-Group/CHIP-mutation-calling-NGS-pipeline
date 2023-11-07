@@ -153,7 +153,7 @@ rule run_BQSR1:
     threads: Threads
     resources:
         mem_mb=Mem_Mb
-    log: download_dir + "/output/logs/{sample}/{sample}.recal_data.table.log"
+    log: download_dir + "/output/logs/{sample}.recal_data.table.log"
     shell: "(gatk --java-options '-Xmx32g -Xms4g' BaseRecalibrator \
     -R {reference} \
     -I {input[0]} \
@@ -172,7 +172,7 @@ rule run_BQSR2:
     threads: Threads
     resources:
         mem_mb=Mem_Mb
-    log: download_dir + "/output/logs/{sample}/{sample}.recal_reads.bam.log"
+    log: download_dir + "/output/logs/{sample}.recal_reads.bam.log"
     shell: "(gatk --java-options '-Xmx32g -Xms4g' ApplyBQSR \
     -R {reference} \
     -I {input[1]} \
@@ -187,7 +187,7 @@ rule gatk_mutect:
     threads: Threads
     resources:
         mem_mb=Mem_Mb
-    log: download_dir + "/output/logs/{sample}/{sample}.mutect2.vcf.gz.log"
+    log: download_dir + "/output/logs/{sample}.mutect2.vcf.gz.log"
     shell: "(gatk Mutect2 \
     -R {reference} \
     -I {input[0]} \
@@ -205,7 +205,7 @@ rule learnReadOrientationModel:
     threads: Threads
     resources:
         mem_mb=Mem_Mb
-    log: download_dir + "/output/logs/{sample}/{sample}.read-orientation-model.tar.gz.log"
+    log: download_dir + "/output/logs/{sample}.read-orientation-model.tar.gz.log"
     shell: "(gatk LearnReadOrientationModel \
     -I {input} \
     -O {output}) >{log} 2>&1"
@@ -218,7 +218,7 @@ rule getPileupSummaries:
     threads: Threads
     resources:
         mem_mb=Mem_Mb
-    log: download_dir + "/output/logs/{sample}/{sample}.tumor.getpileupsummaries.table.log"
+    log: download_dir + "/output/logs/{sample}.tumor.getpileupsummaries.table.log"
     shell: "(gatk GetPileupSummaries \
     -R {reference} \
     -I {input}\
@@ -233,7 +233,7 @@ rule calculateContamination:
     threads: Threads
     resources:
         mem_mb=Mem_Mb
-    log: download_dir + "/output/logs/{sample}/{sample}.calculatecontamination.table.log"
+    log: download_dir + "/output/logs/{sample}.calculatecontamination.table.log"
     shell: "(gatk CalculateContamination \
     -I {input}\
     -O {output}) >{log} 2>&1"
@@ -246,7 +246,7 @@ rule filterMutectCalls1:
     threads: Threads
     resources:
         mem_mb=Mem_Mb
-    log: download_dir + "/output/logs/{sample}/{sample}.somatic_oncefiltered.vcf.gz.log"
+    log: download_dir + "/output/logs/{sample}.somatic_oncefiltered.vcf.gz.log"
     shell: "(gatk FilterMutectCalls \
     -R {reference} \
     -V {input[0]} \
@@ -262,7 +262,7 @@ rule filterMutectCalls2:
     threads: Threads
     resources:
         mem_mb=Mem_Mb
-    log: download_dir + "/output/logs/{sample}/{sample}.somatic.final.vcf.gz.log"
+    log: download_dir + "/output/logs/{sample}.somatic.final.vcf.gz.log"
     shell: "(vcftools --gzvcf {input} --remove-filtered-all --recode --stdout | bgzip -c -f >{output}) >{log} 2>&1"
 
 
@@ -273,5 +273,5 @@ rule filterMutectCalls3:
     threads: Threads
     resources:
         mem_mb=Mem_Mb
-    log: download_dir + "/output/logs/{sample}/{sample}.somatic.final.vcf.gz.tbi.log"
+    log: download_dir + "/output/logs/{sample}.somatic.final.vcf.gz.tbi.log"
     shell: "(tabix {input} ) >{log} 2>&1"
