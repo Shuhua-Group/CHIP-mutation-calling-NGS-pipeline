@@ -8,16 +8,16 @@
 #### Please download the following files which are required known variation vcf files in the GRCh38 resource bundle in advance, and put all downloaded files into the same directory -`` gatk_db ``, coincided with the directory in your configuration file (`` config.yaml ``)
 
 ### 1-11). GRCh38 reference:
- ``GRCh38_full_analysis_set_plus_decoy_hla.dict``
- ``GRCh38_full_analysis_set_plus_decoy_hla.fa``
- ``GRCh38_full_analysis_set_plus_decoy_hla.fa.alt``
- ``GRCh38_full_analysis_set_plus_decoy_hla.fa.bwt``
- ``GRCh38_full_analysis_set_plus_decoy_hla.fa.fai``
- ``GRCh38_full_analysis_set_plus_decoy_hla.fa.sa``
- ``GRCh38_full_analysis_set_plus_decoy_hla.fa.pac``
- ``GRCh38_full_analysis_set_plus_decoy_hla.fa.ann``
- ``GRCh38_full_analysis_set_plus_decoy_hla.fa.amb``
- ``GRCh38_full_analysis_set_plus_decoy_hla.fa.0123``
+ ``GRCh38_full_analysis_set_plus_decoy_hla.fa``;
+ ``GRCh38_full_analysis_set_plus_decoy_hla.dict``;
+ ``GRCh38_full_analysis_set_plus_decoy_hla.fa.alt``;
+ ``GRCh38_full_analysis_set_plus_decoy_hla.fa.bwt``;
+ ``GRCh38_full_analysis_set_plus_decoy_hla.fa.fai``;
+ ``GRCh38_full_analysis_set_plus_decoy_hla.fa.sa``;
+ ``GRCh38_full_analysis_set_plus_decoy_hla.fa.pac``;
+ ``GRCh38_full_analysis_set_plus_decoy_hla.fa.ann``;
+ ``GRCh38_full_analysis_set_plus_decoy_hla.fa.amb``;
+ ``GRCh38_full_analysis_set_plus_decoy_hla.fa.0123``;
  ``GRCh38_full_analysis_set_plus_decoy_hla.fa.bwt.2bit.64``
 * reference_files: https://ftp.1000genomes.ebi.ac.uk/vol1/ftp/technical/reference/GRCh38_reference_genome/
 
