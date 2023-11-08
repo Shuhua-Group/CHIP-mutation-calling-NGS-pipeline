@@ -146,4 +146,4 @@ If the pipeline runs correctly, the results file will be written to `{download_d
 ### Notes
 
 * Please give credit to the relevant paper if the pipeline was applied to your work
-
+* tech support: xtang21@m.fudan.edu.cn

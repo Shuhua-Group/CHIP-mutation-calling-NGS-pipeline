@@ -28,6 +28,8 @@ known_omni = gatk_db + "/1000G_omni2.5.hg38.vcf.gz"
 # panel of normal
 PON = gatk_db + "/somatic-hg38_1000g_pon.hg38.vcf.gz"
 
+interval_bed = download_dir + "/reference/common.interval_GRCh38.bed"
+
 
 
 rule all:
@@ -193,6 +195,7 @@ rule gatk_mutect:
     -I {input[0]} \
     -pon {PON} \
     --germline-resource {germline_resource} \
+    -L ={interval_bed} \
     --af-of-alleles-not-in-resource 0.000001 \
     --f1r2-tar-gz {output[1]}\
     -O {output[0]}) >{log} 2>&1"
@@ -222,6 +225,7 @@ rule getPileupSummaries:
     shell: "(gatk --java-options '-Xmx32g -Xms4g' GetPileupSummaries \
     -R {reference} \
     -I {input}\
+    -L ={interval_bed}\
     -V {germline_resource} \
     -O {output}) >{log} 2>&1"
 
@@ -251,6 +255,7 @@ rule filterMutectCalls1:
     -R {reference} \
     -V {input[0]} \
     --contamination-table {input[1]} \
+    -L ={interval_bed}\
     --ob-priors {input[2]}\
     -O {output}) >{log} 2>&1"
 
