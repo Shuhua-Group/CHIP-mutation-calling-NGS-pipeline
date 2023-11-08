@@ -188,7 +188,7 @@ rule gatk_mutect:
     resources:
         mem_mb=Mem_Mb
     log: download_dir + "/output/logs/{sample}.mutect2.vcf.gz.log"
-    shell: "(gatk Mutect2 \
+    shell: "(gatk --java-options '-Xmx32g -Xms4g' Mutect2 \
     -R {reference} \
     -I {input[0]} \
     -pon {PON} \
@@ -206,7 +206,7 @@ rule learnReadOrientationModel:
     resources:
         mem_mb=Mem_Mb
     log: download_dir + "/output/logs/{sample}.read-orientation-model.tar.gz.log"
-    shell: "(gatk LearnReadOrientationModel \
+    shell: "(gatk --java-options '-Xmx32g -Xms4g' LearnReadOrientationModel \
     -I {input} \
     -O {output}) >{log} 2>&1"
 
@@ -219,7 +219,7 @@ rule getPileupSummaries:
     resources:
         mem_mb=Mem_Mb
     log: download_dir + "/output/logs/{sample}.tumor.getpileupsummaries.table.log"
-    shell: "(gatk GetPileupSummaries \
+    shell: "(gatk --java-options '-Xmx32g -Xms4g' GetPileupSummaries \
     -R {reference} \
     -I {input}\
     -V {germline_resource} \
@@ -234,7 +234,7 @@ rule calculateContamination:
     resources:
         mem_mb=Mem_Mb
     log: download_dir + "/output/logs/{sample}.calculatecontamination.table.log"
-    shell: "(gatk CalculateContamination \
+    shell: "(gatk --java-options '-Xmx32g -Xms4g' CalculateContamination \
     -I {input}\
     -O {output}) >{log} 2>&1"
 
@@ -247,7 +247,7 @@ rule filterMutectCalls1:
     resources:
         mem_mb=Mem_Mb
     log: download_dir + "/output/logs/{sample}.somatic_oncefiltered.vcf.gz.log"
-    shell: "(gatk FilterMutectCalls \
+    shell: "(gatk --java-options '-Xmx32g -Xms4g' FilterMutectCalls \
     -R {reference} \
     -V {input[0]} \
     --contamination-table {input[1]} \

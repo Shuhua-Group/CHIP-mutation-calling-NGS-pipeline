@@ -4,27 +4,38 @@
 ![image](https://github.com/MorganHis/Somatic-mutation-calling-test-pipeline/assets/84215074/b490c5fb-6e51-4f0d-b129-f2a24c649a33)
 -----------------------------------
 
-## Required downloaded files
+## Required downloaded files(18 files in total)
 #### Please download the following files which are required known variation vcf files in the GRCh38 resource bundle in advance, and put all downloaded files into the same directory -`` gatk_db ``, coincided with the directory in your configuration file (`` config.yaml ``)
 
-### 1). GRCh38 reference: `` GRCh38_full_analysis_set_plus_decoy_hla.fa``
-* reference: https://ftp.1000genomes.ebi.ac.uk/vol1/ftp/technical/reference/GRCh38_reference_genome/
+### 1-11). GRCh38 reference:
+ ``GRCh38_full_analysis_set_plus_decoy_hla.dict``
+ ``GRCh38_full_analysis_set_plus_decoy_hla.fa``
+ ``GRCh38_full_analysis_set_plus_decoy_hla.fa.alt``
+ ``GRCh38_full_analysis_set_plus_decoy_hla.fa.bwt``
+ ``GRCh38_full_analysis_set_plus_decoy_hla.fa.fai``
+ ``GRCh38_full_analysis_set_plus_decoy_hla.fa.sa``
+ ``GRCh38_full_analysis_set_plus_decoy_hla.fa.pac``
+ ``GRCh38_full_analysis_set_plus_decoy_hla.fa.ann``
+ ``GRCh38_full_analysis_set_plus_decoy_hla.fa.amb``
+ ``GRCh38_full_analysis_set_plus_decoy_hla.fa.0123``
+ ``GRCh38_full_analysis_set_plus_decoy_hla.fa.bwt.2bit.64``
+* reference_files: https://ftp.1000genomes.ebi.ac.uk/vol1/ftp/technical/reference/GRCh38_reference_genome/
 
-### 2). gnomAD resource for well known germline mutations
+### 12). gnomAD resource for well known germline mutations
 * germline_resource: https://console.cloud.google.com/storage/browser/gatk-best-practices/somatic-hg38/af-only-gnomad.hg38.vcf.gz
 
-### 3). Well-trained panel of normal (PON) control based on 1KG for somatic mutation calling
+### 13). Well-trained panel of normal (PON) control based on 1KG for somatic mutation calling
 * PON: https://console.cloud.google.com/storage/browser/gatk-best-practices/somatic-hg38/somatic-hg38_1000g_pon.hg38.vcf.gz
 
-### 4-6). Known sites of 1KG
+### 14-16). Known sites of 1KG
 * known_1kg: https://console.cloud.google.com/storage/browser/genomics-public-data/resources/broad/hg38/v0/1000G_phase1.snps.high_confidence.hg38.vcf.gz
 * known_omni: https://console.cloud.google.com/storage/browser/genomics-public-data/resources/broad/hg38/v0/1000G_omni2.5.hg38.vcf.gz
 * known_mills: https://console.cloud.google.com/storage/browser/genomics-public-data/resources/broad/hg38/v0/Mills_and_1000G_gold_standard.indels.hg38.vcf.gz
 
-### 7). dbSNP
+### 17). dbSNP
 * dbsnp: https://console.cloud.google.com/storage/browser/genomics-public-data/resources/broad/hg38/v0/Homo_sapiens_assembly38.dbsnp138.vcf.gz
 
-### 8). Known Indels
+### 18). Known Indels
 * known_indels: https://console.cloud.google.com/storage/browser/genomics-public-data/resources/broad/hg38/v0/Homo_sapiens_assembly38.known_indels.vcf.gz
 
 -----------------------------------
