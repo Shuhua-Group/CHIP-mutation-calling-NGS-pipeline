@@ -1,42 +1,58 @@
 # Somatic mutation calling pipeline for individual sample #
 
 ### This pipeline based on snakemake calls somatic variants from next-generation whole-exome/genome sequencing of human samples and produces a purely filtered VCF file containing high confident somatic mutations
+
 ![image](https://github.com/MorganHis/Somatic-mutation-calling-test-pipeline/assets/84215074/b490c5fb-6e51-4f0d-b129-f2a24c649a33)
 -----------------------------------
 
 ## Required downloaded files(18 files in total)
+
 #### Please download the following files which are required known variation vcf files in the GRCh38 resource bundle in advance, and put all downloaded files into the same directory -`` gatk_db ``, coincided with the directory in your configuration file (`` config.yaml ``)
 
 ### 1-11). GRCh38 reference:
- ``GRCh38_full_analysis_set_plus_decoy_hla.fa``;
- ``GRCh38_full_analysis_set_plus_decoy_hla.dict``;
- ``GRCh38_full_analysis_set_plus_decoy_hla.fa.alt``;
- ``GRCh38_full_analysis_set_plus_decoy_hla.fa.bwt``;
- ``GRCh38_full_analysis_set_plus_decoy_hla.fa.fai``;
- ``GRCh38_full_analysis_set_plus_decoy_hla.fa.sa``;
- ``GRCh38_full_analysis_set_plus_decoy_hla.fa.pac``;
- ``GRCh38_full_analysis_set_plus_decoy_hla.fa.ann``;
- ``GRCh38_full_analysis_set_plus_decoy_hla.fa.amb``;
- ``GRCh38_full_analysis_set_plus_decoy_hla.fa.0123``;
- ``GRCh38_full_analysis_set_plus_decoy_hla.fa.bwt.2bit.64``
+
+``GRCh38_full_analysis_set_plus_decoy_hla.fa``;
+``GRCh38_full_analysis_set_plus_decoy_hla.dict``;
+``GRCh38_full_analysis_set_plus_decoy_hla.fa.alt``;
+``GRCh38_full_analysis_set_plus_decoy_hla.fa.bwt``;
+``GRCh38_full_analysis_set_plus_decoy_hla.fa.fai``;
+``GRCh38_full_analysis_set_plus_decoy_hla.fa.sa``;
+``GRCh38_full_analysis_set_plus_decoy_hla.fa.pac``;
+``GRCh38_full_analysis_set_plus_decoy_hla.fa.ann``;
+``GRCh38_full_analysis_set_plus_decoy_hla.fa.amb``;
+``GRCh38_full_analysis_set_plus_decoy_hla.fa.0123``;
+``GRCh38_full_analysis_set_plus_decoy_hla.fa.bwt.2bit.64``
+
 * reference_files: https://ftp.1000genomes.ebi.ac.uk/vol1/ftp/technical/reference/GRCh38_reference_genome/
 
 ### 12). gnomAD resource for well known germline mutations
-* germline_resource: https://console.cloud.google.com/storage/browser/gatk-best-practices/somatic-hg38/af-only-gnomad.hg38.vcf.gz
+
+*
+germline_resource: https://console.cloud.google.com/storage/browser/gatk-best-practices/somatic-hg38/af-only-gnomad.hg38.vcf.gz
 
 ### 13). Well-trained panel of normal (PON) control based on 1KG for somatic mutation calling
-* PON: https://console.cloud.google.com/storage/browser/gatk-best-practices/somatic-hg38/somatic-hg38_1000g_pon.hg38.vcf.gz
+
+*
+PON: https://console.cloud.google.com/storage/browser/gatk-best-practices/somatic-hg38/somatic-hg38_1000g_pon.hg38.vcf.gz
 
 ### 14-16). Known sites of 1KG
-* known_1kg: https://console.cloud.google.com/storage/browser/genomics-public-data/resources/broad/hg38/v0/1000G_phase1.snps.high_confidence.hg38.vcf.gz
-* known_omni: https://console.cloud.google.com/storage/browser/genomics-public-data/resources/broad/hg38/v0/1000G_omni2.5.hg38.vcf.gz
-* known_mills: https://console.cloud.google.com/storage/browser/genomics-public-data/resources/broad/hg38/v0/Mills_and_1000G_gold_standard.indels.hg38.vcf.gz
+
+*
+known_1kg: https://console.cloud.google.com/storage/browser/genomics-public-data/resources/broad/hg38/v0/1000G_phase1.snps.high_confidence.hg38.vcf.gz
+*
+known_omni: https://console.cloud.google.com/storage/browser/genomics-public-data/resources/broad/hg38/v0/1000G_omni2.5.hg38.vcf.gz
+*
+known_mills: https://console.cloud.google.com/storage/browser/genomics-public-data/resources/broad/hg38/v0/Mills_and_1000G_gold_standard.indels.hg38.vcf.gz
 
 ### 17). dbSNP
-* dbsnp: https://console.cloud.google.com/storage/browser/genomics-public-data/resources/broad/hg38/v0/Homo_sapiens_assembly38.dbsnp138.vcf.gz
+
+*
+dbsnp: https://console.cloud.google.com/storage/browser/genomics-public-data/resources/broad/hg38/v0/Homo_sapiens_assembly38.dbsnp138.vcf.gz
 
 ### 18). Known Indels
-* known_indels: https://console.cloud.google.com/storage/browser/genomics-public-data/resources/broad/hg38/v0/Homo_sapiens_assembly38.known_indels.vcf.gz
+
+*
+known_indels: https://console.cloud.google.com/storage/browser/genomics-public-data/resources/broad/hg38/v0/Homo_sapiens_assembly38.known_indels.vcf.gz
 
 -----------------------------------
 
@@ -44,7 +60,8 @@
 
 ### Please place both files in the same directory, which the directory will be set as the `` sample_dir `` in your configuration file (`` config.yaml ``)
 
-* Two FASTQ files (named as 'sampleID_1.fq.gz' and 'sampleID_2.fq.gz') contained paired-end next generation sequencing (WES or WGS) data
+* Two FASTQ files (named as 'sampleID_1.fq.gz' and 'sampleID_2.fq.gz') contained paired-end next generation sequencing (
+  WES or WGS) data
 
 -----------------------------------
 
@@ -88,7 +105,8 @@ conda activate SomaticMC
 
 ### 0. Modify the configuration file
 
-* The provided configuration file (`` config.yaml ``) is presented as follows, and it requires modification for some items as described in the comment lines
+* The provided configuration file (`` config.yaml ``) is presented as follows, and it requires modification for some
+  items as described in the comment lines
 
 ```
 
@@ -120,6 +138,10 @@ snakemake -s snakemake_SMC --configfile config.yaml -c 32
 
 ``` 
 
+In real-data testing, we used a 32-cores server to analyse pair-ends ~30x WGS data from one sample, taking a total of ~
+78 hours and consuming a peak of ~9 GB of memory；while ~30x WES data from one sample, taking a total of ~9 hours and
+consuming a peak of ~9 GB of memory.
+
 You can also run the pipeline in PBS or SLURM system
 
 See more details at [snakemake doc](https://snakemake.readthedocs.io/en/stable/executing/cluster.html)
@@ -130,16 +152,22 @@ See more details at [snakemake doc](https://snakemake.readthedocs.io/en/stable/e
 
 If the pipeline runs correctly, the results file will be written to `{download_dir}/output/`, including:
 
-* a filtered individual VCF (named as *.somatic.final.vcf.gz) containing all detected somatic variants after hard filtering by Mutect2 will be written to: `` {download_dir}/output/vcf/{sample} ``, with high confident somatic variants remained
+* a filtered individual VCF (named as *.somatic.final.vcf.gz) containing all detected somatic variants after hard
+  filtering by Mutect2 will be written to: `` {download_dir}/output/vcf/{sample} ``, with high confident somatic
+  variants remained
 
-* an individual VCF (named as *.mutect2.vcf.gz) containing raw somatic variants calling output without filtration will be written to: `` {download_dir}/output/vcf/{sample} ``, which you can define the filtration rules customized
+* an individual VCF (named as *.mutect2.vcf.gz) containing raw somatic variants calling output without filtration will
+  be written to: `` {download_dir}/output/vcf/{sample} ``, which you can define the filtration rules customized
 
-* a bam file (named as *.recal_reads.bam) containing pre-processed reads by the GATK BQSR will be written to: `` {download_dir}/output/gatk/{sample} ``, which could be directly loaded into IGV (Integrative Genomics Viewer) to check the sequenced reads coverage
+* a bam file (named as *.recal_reads.bam) containing pre-processed reads by the GATK BQSR will be written
+  to: `` {download_dir}/output/gatk/{sample} ``, which could be directly loaded into IGV (Integrative Genomics Viewer)
+  to check the sequenced reads coverage
 
 * all log files will be saved in the `` {download_dir}/output/logs/ `` directory
 
 
-* To further interpret the results, see more details at(https://gatk.broadinstitute.org/hc/en-us/articles/360037593851-Mutect2)
+* To further interpret the results, see more details
+  at(https://gatk.broadinstitute.org/hc/en-us/articles/360037593851-Mutect2)
 
 -----------------------------------
 
