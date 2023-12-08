@@ -28,30 +28,39 @@
 ### 12). gnomAD resource for well known germline mutations
 
 *
+
 germline_resource: https://console.cloud.google.com/storage/browser/gatk-best-practices/somatic-hg38/af-only-gnomad.hg38.vcf.gz
 
 ### 13). Well-trained panel of normal (PON) control based on 1KG for somatic mutation calling
 
 *
+
 PON: https://console.cloud.google.com/storage/browser/gatk-best-practices/somatic-hg38/somatic-hg38_1000g_pon.hg38.vcf.gz
 
 ### 14-16). Known sites of 1KG
 
 *
+
 known_1kg: https://console.cloud.google.com/storage/browser/genomics-public-data/resources/broad/hg38/v0/1000G_phase1.snps.high_confidence.hg38.vcf.gz
+
 *
+
 known_omni: https://console.cloud.google.com/storage/browser/genomics-public-data/resources/broad/hg38/v0/1000G_omni2.5.hg38.vcf.gz
+
 *
+
 known_mills: https://console.cloud.google.com/storage/browser/genomics-public-data/resources/broad/hg38/v0/Mills_and_1000G_gold_standard.indels.hg38.vcf.gz
 
 ### 17). dbSNP
 
 *
+
 dbsnp: https://console.cloud.google.com/storage/browser/genomics-public-data/resources/broad/hg38/v0/Homo_sapiens_assembly38.dbsnp138.vcf.gz
 
 ### 18). Known Indels
 
 *
+
 known_indels: https://console.cloud.google.com/storage/browser/genomics-public-data/resources/broad/hg38/v0/Homo_sapiens_assembly38.known_indels.vcf.gz
 
 -----------------------------------
@@ -139,8 +148,8 @@ snakemake -s snakemake_SMC --configfile config.yaml -c 32
 ``` 
 
 In real-data testing, we used a 32-cores server to analyse pair-ends ~30x WGS data from one sample, taking a total of ~
-78 hours and consuming a peak of ~9 GB of memory；while ~30x WES data from one sample, taking a total of ~9 hours and
-consuming a peak of ~9 GB of memory.
+78 hours and consuming a peak of ~9 GB of memory；while ~30x WES data from one sample, takes a total of ~9 hours and
+consumes a peak of ~9 GB of memory.
 
 You can also run the pipeline in PBS or SLURM system
 
