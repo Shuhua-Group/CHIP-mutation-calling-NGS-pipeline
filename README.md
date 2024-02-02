@@ -153,7 +153,7 @@ consumes a peak of ~9 GB of memory.
 
 You can also run the pipeline in PBS or SLURM system
 
-See more details at [snakemake doc](https://snakemake.readthedocs.io/en/stable/executing/cluster.html)
+See more details at [snakemake doc](https://snakemake.readthedocs.io/en/stable/executing/cli.html)
 
 -----------------------------------
 
