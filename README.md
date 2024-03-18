@@ -1,6 +1,6 @@
-# Somatic mutation calling pipeline for individual sample #
+# CHIP mutation calling pipeline for individual sample #
 
-### This pipeline based on snakemake calls somatic variants from next-generation whole-exome/genome sequencing of human samples and produces a purely filtered VCF file containing high confident somatic mutations
+### This pipeline based on snakemake calls CHIP variants from next-generation whole-exome/genome sequencing of human samples and produces a purely filtered VCF file containing high confident CHIP mutations
 
 ![image](https://github.com/MorganHis/Somatic-mutation-calling-test-pipeline/assets/84215074/b490c5fb-6e51-4f0d-b129-f2a24c649a33)
 -----------------------------------
@@ -31,7 +31,7 @@
 
 germline_resource: https://console.cloud.google.com/storage/browser/gatk-best-practices/somatic-hg38/af-only-gnomad.hg38.vcf.gz
 
-### 13). Well-trained panel of normal (PON) control based on 1KG for somatic mutation calling
+### 13). Well-trained panel of normal (PON) control based on 1KG for CHIP mutation calling
 
 *
 
@@ -87,13 +87,13 @@ cd  path/to/download
 ### 1. Clone the repo
 
 ```
-git clone https://github.com/Shuhua-Group/Somatic-mutation-calling-NGS-pipeline
+git clone https://github.com/Shuhua-Group/CHIP-mutation-calling-NGS-pipeline
 ```
 
 ### 2. Open the work directory where you want to run this pipeline
 
 ```
-cd Somatic-mutation-calling-NGS-pipeline
+cd CHIP-mutation-calling-NGS-pipeline
 ```
 
 ### 3. Create the conda environment
@@ -122,8 +122,8 @@ conda activate SomaticMC
 ## sampleName (your input files should be named as 'sampleName_1.fq.gz' and 'sampleName_2.fq.gz'.)
 sampleName: "your_sampleName"
 
-## replace the "/path/to/download/Somatic-mutation-calling-NGS-pipeline" to the absolute directory where the pipeline was downloaded
-download_dir: /path/to/download/Somatic-mutation-calling-NGS-pipeline
+## replace the "/path/to/download/CHIP-mutation-calling-NGS-pipeline" to the absolute directory where the pipeline was downloaded
+download_dir: /path/to/download/CHIP-mutation-calling-NGS-pipeline
 
 ## replace the "/path/to/reference" to the absolute directory where the required reference data were downloaded
 gatk_db: /path/to/reference
