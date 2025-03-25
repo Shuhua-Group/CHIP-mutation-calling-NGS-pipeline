@@ -184,3 +184,4 @@ If the pipeline runs correctly, the results file will be written to `{download_d
 
 * Please give credit to the relevant paper if the pipeline was applied to your work
 * tech support: xtang21@m.fudan.edu.cn
+* Under good network conditions, this pipeline installation can be completed within 20 minutes
