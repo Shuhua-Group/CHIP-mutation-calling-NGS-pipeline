@@ -107,14 +107,14 @@ conda env create -f environment.yaml
 ```
 conda activate SomaticMC
 ```
-
+* The installation step would cost ~20 mins under normal network environment.
 -----------------------------------
 
 ## How to run
 
 ### 0. Modify the configuration file
 
-* The provided configuration file (`` config.yaml ``) is presented as follows, and it requires modification for some
+The provided configuration file (`` config.yaml ``) is presented as follows, and it requires modification for some
   items as described in the comment lines
 
 ```
@@ -184,4 +184,3 @@ If the pipeline runs correctly, the results file will be written to `{download_d
 
 * Please give credit to the relevant paper if the pipeline was applied to your work
 * tech support: xtang21@m.fudan.edu.cn
-* Under good network conditions, this pipeline installation can be completed within 20 minutes
