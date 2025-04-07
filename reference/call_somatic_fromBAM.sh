@@ -18,7 +18,7 @@ reference=$gatk_db/GATK_hg38_from_Google_Cloud_bucket.2016/Homo_sapiens_assembly
 germline_resource=$gatk_db/somatic/af-only-gnomad.hg38.vcf.gz
 
 # download from the 'reference' folder in Github links
-interval_bed=$gatk_db/somatic/hglft_genome_55993_7ba280.bed
+interval_bed=$gatk_db/somatic/common.interval_GRCh38.bed
 
 # dbsnp
 dbsnp=$gatk_db/GATK_hg38_from_Google_Cloud_bucket.2016/backup/Homo_sapiens_assembly38.dbsnp138.vcf.gz
