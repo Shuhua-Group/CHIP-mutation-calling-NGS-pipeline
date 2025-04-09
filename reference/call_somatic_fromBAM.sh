@@ -38,9 +38,9 @@ PON=$gatk_db/somatic/somatic-hg38_1000g_pon.hg38.vcf.gz
 proj_dir=/share1/home/tangxia/projects/
 cd $proj_dir
 
-if [ ! -d "gatk" ]; then mkdir gatk fi
-if [ ! -d "mutect2" ]; then mkdir mutect2 fi
-if [ ! -d "svcf" ]; then mkdir svcf fi
+if [ ! -d "gatk" ]; then mkdir gatk; fi
+if [ ! -d "mutect2" ]; then mkdir mutect2; fi
+if [ ! -d "svcf" ]; then mkdir svcf; fi
 
 # tmp dir
 TMP_DIR=$proj_dir/gatk/$id/tmp
