@@ -176,7 +176,7 @@ main () {
 }
 
 # declare your path to sample_list, and put the sample name into one .txt file, each row indicates one sample name
-sample_list=your/path/to/sample_list 
+sample_list=/your/path/to/sample_list 
 cut -f1 ${sample_list}  | uniq | while read id; do main $id; done
 
 
