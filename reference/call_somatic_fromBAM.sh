@@ -153,15 +153,15 @@ main () {
 	bam2="$proj_dir/gatk/${id}/${id}.recal_reads.bam"
 
 	f1r2="$proj_dir/mutect2/${id}/${id}.f1r2.tar.gz"
-	mutect2_output="$proj_dir/vcf/${id}/${id}.mutect2.vcf.gz"
+	mutect2_output="$proj_dir/svcf/${id}/${id}.mutect2.vcf.gz"
 	orientation_output="$proj_dir/mutect2/${id}/${id}.read-orientation-model.tar.gz"
 	pileupsummariseTable="$proj_dir/mutect2/${id}/${id}.tumor.getpileupsummaries.table"
 	contaminationTable="$proj_dir/mutect2/${id}/${id}.calculatecontamination.table"
 	readOrientation="$proj_dir/mutect2/${id}/${id}.read-orientation-model.tar.gz"
-	filteredVCF="$proj_dir/vcf/${id}/${id}.somatic_oncefiltered.vcf.gz"
+	filteredVCF="$proj_dir/svcf/${id}/${id}.somatic_oncefiltered.vcf.gz"
 
 	## this is the output file for each individual
-	finalVCF="$proj_dir/vcf/${id}/${id}.somatic.final.vcf.gz"
+	finalVCF="$proj_dir/svcf/${id}/${id}.somatic.final.vcf.gz"
 
 
         ### 1. generate recalibrated bam file 
